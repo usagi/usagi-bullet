@@ -13,29 +13,33 @@ subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-///-----includes_start-----
+// 「うさぎ★ばれっと」プロジェクトによる改変
+// https://github.com/usagi/usagi-bullet/commits/master/Demos/HelloWorld/HelloWorld.cpp
+// Copyright (c) 2013 Usagi Ito <usagi@WonderRabbitProject.net>
+
+///-----include群の開始-----
 #include "btBulletDynamicsCommon.h"
 #include <memory>
 #include <tuple>
 #include <iostream>
-///-----includes_end-----
+///-----include群の終了-----
 
-/// This is a Hello World program for running a basic Bullet physics simulation
+/// これは基礎的なBullet物理シミュレーションを動作させるHello Worldプログラムだよ
 
 int main()
 {
-  ///-----initialization_start-----
+  ///-----初期化の開始-----
 
-  ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
+  /// デフォルトの衝突設定を行います。ユーザー独自の設定を作る事もできますよ。
   std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration(new btDefaultCollisionConfiguration());
 
-  ///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+  /// デフォルトの衝突ディスパッチャーを使います。 他のディスパッチャーで並行処理にも対応できますよ（→ Extras/BulletMultiThread）
   std::unique_ptr<btCollisionDispatcher> dispatcher(new btCollisionDispatcher(collisionConfiguration.get()));
 
-  ///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
+  /// btDbvtBroadphaseは一般的には良いbroadphaseです。同じ様にしてbtAxis3Sweepも試せますよ。
   std::unique_ptr<btBroadphaseInterface> overlappingPairCache(new btDbvtBroadphase());
 
-  ///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+  /// デフォルトの制約ソルバー。他のソルバーで並行処理にも対応できますよ（→ Extras/BulletMultiThreaded）
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver(new btSequentialImpulseConstraintSolver);
 
   std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld
@@ -49,17 +53,17 @@ int main()
 
   dynamicsWorld->setGravity(btVector3(0,-10,0));
 
-  ///-----initialization_end-----
+  ///-----初期化の終了-----
 
-  ///create a few basic rigid bodies
+  /// 基礎的な剛体群を生成します
   std::unique_ptr<btCollisionShape> groundShape
   ( new btBoxShape
     ( btVector3( btScalar(50.), btScalar(50.), btScalar(50.) )
     )
   );
 
-  //keep track of the shapes, we release memory at exit.
-  //make sure to re-use collision shapes among rigid bodies whenever possible!
+  // シェイプ群のトラッキングを維持する事で終了時にメモリーを開放できるでしょう。（訳注：いいからスマポ使え）
+  // できるだけ、剛体群が衝突形状（シェイプ）を流用する様にしましょう！
   btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
   collisionShapes.push_back(groundShape.get());
@@ -74,19 +78,19 @@ int main()
     motion_transform.setIdentity();
     motion_transform.setOrigin(motion_transform_origin_vector);
     
-    //rigidbody is dynamic if and only if mass is non zero, otherwise static
+    // 剛体は、もしmassが非ゼロならば動的だし、そうでなければ静的なのだ
     bool isDynamic = (mass != 0.f);
     
     btVector3 localInertia(0,0,0);
     if (isDynamic)
       collision_shape->calculateLocalInertia(mass,localInertia);
     
-    //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+    // motionstateの使用を推奨するよ、なぜなら'active'なオブジェクト群だけとの同期と補間機能を提供してくれるからだ
     std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(motion_transform));
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), collision_shape.get(), localInertia);
     std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
     
-    //add the body to the dynamics world
+    // 物体を動力学の世界へ追加します
     dynamicsWorld->addRigidBody(body.get());
     
     return std::make_tuple(std::move(myMotionState), std::move(body));
@@ -94,24 +98,24 @@ int main()
   
   auto body_1_dtor = create_rigidbody(0., btVector3(0,-56,0), groundShape);
 
-  //create a dynamic rigidbody
+  // 動的な剛体の生成
 
   //std::unique_ptr<btCollisionShape> colShape(new btBoxShape(btVector3(1,1,1)));
   std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
   collisionShapes.push_back(colShape.get());
   
-  /// Create Dynamic Objects
+  /// 動的オブジェクトを生成します
   auto body_2_dtor = create_rigidbody(1.f, btVector3(2,10,0), colShape);
 
 
-  /// Do some simulation
+  /// このシミュレーションを実行します
 
-  ///-----stepsimulation_start-----
+  ///-----ステップシミュレーションの開始-----
   for(auto i = 0; i < 100; ++i)
   {
     dynamicsWorld->stepSimulation(1.f/60.f,10);
     
-    //print positions of all objects
+    // 全てのオブジェクトの位置を表示します
     for (int j=dynamicsWorld->getNumCollisionObjects()-1; j>=0 ;j--)
     {
       btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[j];
@@ -129,6 +133,6 @@ int main()
       }
     }
   }
-  ///-----stepsimulation_end-----
+  ///-----ステップシミュレーションの終了-----
 }
 

@@ -119,7 +119,7 @@ int main()
   /// このシミュレーションを実行します
 
   ///-----ステップシミュレーションの開始-----
-  for(auto i = 0; i < 100; ++i)
+  for ( auto i = 0; i < 100; ++i )
   {
     // dynamicsWorldのシミュレーションステップを全体で1/60秒だけ、最大10分割して進めます
     dynamicsWorld->stepSimulation( 1.f / 60.f, 10 );

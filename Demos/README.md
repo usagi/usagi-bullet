@@ -14,3 +14,9 @@ Linux Mint 15 KDEの標準構成に併せて/usr/include/bulletを追加。
     ${BULLET_PHYSICS_SOURCE_DIR}/src 
     /usr/include/bullet
     )
+
+## CMakeLists.txt > add_definitions
+
+-std=c++11を定義するため追加
+
+    add_definitions("-std=c++11")

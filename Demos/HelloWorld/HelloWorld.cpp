@@ -96,7 +96,7 @@ int main()
 
   //create a dynamic rigidbody
 
-  //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
+  //std::unique_ptr<btCollisionShape> colShape(new btBoxShape(btVector3(1,1,1)));
   std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
   collisionShapes.push_back(colShape.get());
   
@@ -104,8 +104,7 @@ int main()
   auto body_2_dtor = create_rigidbody(1.f, btVector3(2,10,0), colShape);
 
 
-/// Do some simulation
-
+  /// Do some simulation
 
   ///-----stepsimulation_start-----
   for(auto i = 0; i < 100; ++i)
@@ -130,7 +129,6 @@ int main()
       }
     }
   }
-
   ///-----stepsimulation_end-----
 }
 

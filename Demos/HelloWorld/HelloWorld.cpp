@@ -60,17 +60,12 @@ int main()
   /// 基礎的な剛体群を生成します
   
   // 衝突形状（btCollisionShape）としてgroundShapeを定義します
+  // なお、できるだけ、剛体群は衝突形状（シェイプ）を使い回せる様にしましょう！
   std::unique_ptr<btCollisionShape> groundShape
   ( new btBoxShape
     ( btVector3( btScalar(50.), btScalar(50.), btScalar(50.) )
     )
   );
-
-  // できるだけ、剛体群が衝突形状（シェイプ）を流用する様にしましょう！
-  btAlignedObjectArray<btCollisionShape*> collisionShapes;
-
-  // 衝突形状groundShapeをcollisionShapesに追加します
-  collisionShapes.push_back( groundShape.get() );
 
   // 剛体を質量（mass）、動作状態の初期ベクター（motion_transform_origin_vector）、 衝突形状（collision_shape）を元に生成するラムダ式を定義します
   auto create_rigidbody = [&]
@@ -111,10 +106,9 @@ int main()
 
   // 動的な剛体の生成
 
-  // これから生成する動的物体用に衝突形状を生成し、collisionShapesに追加します
+  // これから生成する動的物体用に衝突形状を生成します
   //std::unique_ptr<btCollisionShape> colShape( new btBoxShape( btVector3(1,1,1) ) );
   std::unique_ptr<btCollisionShape> colShape( new btSphereShape( btScalar(1.) ) );
-  collisionShapes.push_back( colShape.get() );
   
   /// 動的オブジェクトを生成します
   auto body_2_dtor = create_rigidbody(1.f, btVector3(2, 10, 0), colShape);

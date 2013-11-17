@@ -34,12 +34,12 @@ int main()
 	std::unique_ptr<btCollisionDispatcher> dispatcher(new btCollisionDispatcher(collisionConfiguration.get()));
 
 	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
-	btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
+	std::unique_ptr<btBroadphaseInterface> overlappingPairCache(new btDbvtBroadphase());
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher.get(),overlappingPairCache,solver,collisionConfiguration.get());
+	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher.get(),overlappingPairCache.get(),solver,collisionConfiguration.get());
 
 	dynamicsWorld->setGravity(btVector3(0,-10,0));
 
@@ -169,10 +169,6 @@ int main()
 
 	//delete solver
 	delete solver;
-
-	//delete broadphase
-	delete overlappingPairCache;
-
 
 	//next line is optional: it will be cleared by the destructor when the array goes out of scope
 	collisionShapes.clear();

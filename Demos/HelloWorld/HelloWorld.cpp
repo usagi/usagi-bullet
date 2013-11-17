@@ -53,7 +53,7 @@ int main()
   );
 
   /// dynamicsWorldに重力を設定します
-  dynamicsWorld->setGravity(btVector3(0,-10,0));
+  dynamicsWorld->setGravity( btVector3(0, -10, 0) );
 
   ///-----初期化の終了-----
 
@@ -70,7 +70,7 @@ int main()
   btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
   // 衝突形状groundShapeをcollisionShapesに追加します
-  collisionShapes.push_back(groundShape.get());
+  collisionShapes.push_back( groundShape.get() );
 
   // 剛体を質量（mass）、動作状態の初期ベクター（motion_transform_origin_vector）、 衝突形状（collision_shape）を元に生成するラムダ式を定義します
   auto create_rigidbody = [&]
@@ -88,22 +88,22 @@ int main()
     bool isDynamic = (mass != 0.f);
     
     // 物体に働く局所的な慣性を定義します
-    btVector3 localInertia(0,0,0);
+    btVector3 localInertia(0, 0, 0);
     
     // 剛体が動的な場合には、衝突形状から局所的な慣性を計算します
     if (isDynamic)
-      collision_shape->calculateLocalInertia(mass,localInertia);
+      collision_shape->calculateLocalInertia(mass, localInertia);
     
     // motionstateの使用を推奨するよ、なぜなら'active'なオブジェクト群だけとの同期と補間機能を提供してくれるからだ
-    std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(motion_transform));
+    std::unique_ptr<btDefaultMotionState> myMotionState( new btDefaultMotionState(motion_transform) );
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), collision_shape.get(), localInertia);
-    std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
+    std::unique_ptr<btRigidBody> body( new btRigidBody(rbInfo) );
     
     // 物体を動力学の世界へ追加します
-    dynamicsWorld->addRigidBody(body.get());
+    dynamicsWorld->addRigidBody( body.get() );
     
     // ラムダ式の外のスコープにスマートポインターであるmyMotionStateとbodyを移します
-    return std::make_tuple(std::move(myMotionState), std::move(body));
+    return std::make_tuple( std::move(myMotionState), std::move(body) );
   };
   
   // 静的な剛体を生成して、btDefaultMotionStateとbtRigidBodyのスマートポインターを含むタプルをスコープに維持します
@@ -112,12 +112,12 @@ int main()
   // 動的な剛体の生成
 
   // これから生成する動的物体用に衝突形状を生成し、collisionShapesに追加します
-  //std::unique_ptr<btCollisionShape> colShape(new btBoxShape(btVector3(1,1,1)));
-  std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
-  collisionShapes.push_back(colShape.get());
+  //std::unique_ptr<btCollisionShape> colShape( new btBoxShape( btVector3(1,1,1) ) );
+  std::unique_ptr<btCollisionShape> colShape( new btSphereShape( btScalar(1.) ) );
+  collisionShapes.push_back( colShape.get() );
   
   /// 動的オブジェクトを生成します
-  auto body_2_dtor = create_rigidbody(1.f, btVector3(2,10,0), colShape);
+  auto body_2_dtor = create_rigidbody(1.f, btVector3(2, 10, 0), colShape);
 
 
   /// このシミュレーションを実行します
@@ -126,17 +126,17 @@ int main()
   for(auto i = 0; i < 100; ++i)
   {
     // dynamicsWorldのシミュレーションステップを全体で1/60秒だけ、最大10分割して進めます
-    dynamicsWorld->stepSimulation(1.f/60.f,10);
+    dynamicsWorld->stepSimulation( 1.f / 60.f, 10 );
     
     // 全てのオブジェクトの位置を表示します
-    for (int j=dynamicsWorld->getNumCollisionObjects()-1; j>=0 ;j--)
+    for ( auto j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; --j )
     {
       // dynamicsWorldからbtCollisionObjectを1つ取り出します
       btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[j];
       // btCollisionObjectをbtRigidBodyへアップキャストします
       btRigidBody* body = btRigidBody::upcast(obj);
       // bodyが取得できており、動作状態も取得できる場合には、
-      if (body && body->getMotionState())
+      if ( body && body->getMotionState() )
       {
         // 世界における物体の変形状態を取得して
         btTransform trans;

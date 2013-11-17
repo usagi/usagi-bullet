@@ -153,11 +153,5 @@ int main()
   }
 
   ///-----stepsimulation_end-----
-
-  //cleanup in the reverse order of creation/initialization
-  
-  ///-----cleanup_start-----
-
-  ///-----cleanup_end-----
 }
 

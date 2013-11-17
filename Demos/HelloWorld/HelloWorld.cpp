@@ -64,31 +64,35 @@ int main()
 
   collisionShapes.push_back(groundShape.get());
 
-  btTransform groundTransform;
-  groundTransform.setIdentity();
-  groundTransform.setOrigin(btVector3(0,-56,0));
-
-  auto body_1_dtor = [&](){
-    btScalar mass(0.);
-
+  auto create_rigidbody = [&]
+  ( btScalar mass
+  , const btVector3& motion_transform_origin_vector
+  , const std::unique_ptr<btCollisionShape>& collision_shape
+  )
+  {
+    btTransform motion_transform;
+    motion_transform.setIdentity();
+    motion_transform.setOrigin(motion_transform_origin_vector);
+    
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mass != 0.f);
-
+    
     btVector3 localInertia(0,0,0);
     if (isDynamic)
-      groundShape->calculateLocalInertia(mass,localInertia);
-
+      collision_shape->calculateLocalInertia(mass,localInertia);
+    
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-    std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(groundTransform));
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), groundShape.get(), localInertia);
+    std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(motion_transform));
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), collision_shape.get(), localInertia);
     std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
-
+    
     //add the body to the dynamics world
     dynamicsWorld->addRigidBody(body.get());
     
     return std::make_tuple(std::move(myMotionState), std::move(body));
-  }();
-
+  };
+  
+  auto body_1_dtor = create_rigidbody(0., btVector3(0,-56,0), groundShape);
 
   //create a dynamic rigidbody
 
@@ -96,32 +100,8 @@ int main()
   std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
   collisionShapes.push_back(colShape.get());
   
-  auto body_2_dtor = [&](){
-    /// Create Dynamic Objects
-    btTransform startTransform;
-    startTransform.setIdentity();
-
-    btScalar  mass(1.f);
-
-    //rigidbody is dynamic if and only if mass is non zero, otherwise static
-    bool isDynamic = (mass != 0.f);
-
-    btVector3 localInertia(0,0,0);
-    if (isDynamic)
-      colShape->calculateLocalInertia(mass,localInertia);
-
-      startTransform.setOrigin(btVector3(2,10,0));
-    
-      //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-      std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(startTransform));
-      btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), colShape.get(), localInertia);
-      std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
-
-      dynamicsWorld->addRigidBody(body.get());
-    
-    return std::make_tuple(std::move(myMotionState), std::move(body));
-  }();
-
+  /// Create Dynamic Objects
+  auto body_2_dtor = create_rigidbody(1.f, btVector3(2,10,0), colShape);
 
 
 /// Do some simulation

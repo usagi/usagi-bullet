@@ -15,7 +15,7 @@ subject to the following restrictions:
 
 ///-----includes_start-----
 #include "btBulletDynamicsCommon.h"
-#include <stdio.h>
+#include <iostream>
 
 /// This is a Hello World program for running a basic Bullet physics simulation
 
@@ -126,7 +126,12 @@ int main()
 			{
 				btTransform trans;
 				body->getMotionState()->getWorldTransform(trans);
-				printf("world pos = %f,%f,%f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
+                                std::cout
+                                  << "world pos = "
+                                  << float(trans.getOrigin().getX()) << ","
+                                  << float(trans.getOrigin().getY()) << ","
+                                  << float(trans.getOrigin().getZ()) << "\n"
+                                  ;
 			}
 		}
 	}

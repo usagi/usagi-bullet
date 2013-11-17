@@ -24,7 +24,6 @@ int main()
 {
   ///-----includes_end-----
 
-  int i;
   ///-----initialization_start-----
 
   ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
@@ -125,7 +124,7 @@ int main()
 
 
   ///-----stepsimulation_start-----
-  for (i=0;i<100;i++)
+  for(auto i = 0; i < 100; ++i)
   {
     dynamicsWorld->stepSimulation(1.f/60.f,10);
     
@@ -155,7 +154,7 @@ int main()
   ///-----cleanup_start-----
 
   //remove the rigidbodies from the dynamics world and delete them
-  for (i=dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+  for(auto i = dynamicsWorld->getNumCollisionObjects() - 1; i >= 0 ; --i)
   {
     btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
     btRigidBody* body = btRigidBody::upcast(obj);

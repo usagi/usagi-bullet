@@ -59,14 +59,6 @@ int main()
 
   /// 基礎的な剛体群を生成します
   
-  // 衝突形状（btCollisionShape）としてgroundShapeを定義します
-  // なお、できるだけ、剛体群は衝突形状（シェイプ）を使い回せる様にしましょう！
-  std::unique_ptr<btCollisionShape> groundShape
-  ( new btBoxShape
-    ( btVector3( btScalar(50.), btScalar(50.), btScalar(50.) )
-    )
-  );
-
   // 剛体を質量（mass）、動作状態の初期ベクター（motion_transform_origin_vector）、 衝突形状（collision_shape）を元に生成するラムダ式を定義します
   auto create_rigidbody = [&]
   ( btScalar mass
@@ -100,6 +92,16 @@ int main()
     // ラムダ式の外のスコープにスマートポインターであるmyMotionStateとbodyを移します
     return std::make_tuple( std::move(myMotionState), std::move(body) );
   };
+
+  // 静的な剛体の生成
+  
+  // 衝突形状（btCollisionShape）としてgroundShapeを定義します
+  // なお、できるだけ、剛体群は衝突形状（シェイプ）を使い回せる様にしましょう！
+  std::unique_ptr<btCollisionShape> groundShape
+  ( new btBoxShape
+    ( btVector3( btScalar(50.), btScalar(50.), btScalar(50.) )
+    )
+  );
   
   // 静的な剛体を生成して、btDefaultMotionStateとbtRigidBodyのスマートポインターを含むタプルをスコープに維持します
   auto body_1_dtor = create_rigidbody(0., btVector3(0,-56,0), groundShape);
@@ -110,7 +112,7 @@ int main()
   //std::unique_ptr<btCollisionShape> colShape( new btBoxShape( btVector3(1,1,1) ) );
   std::unique_ptr<btCollisionShape> colShape( new btSphereShape( btScalar(1.) ) );
   
-  /// 動的オブジェクトを生成します
+  /// 動的な剛体を生成して、btDefaultMotionStateとbtRigidBodyのスマートポインターを含むタプルをスコープに維持します
   auto body_2_dtor = create_rigidbody(1.f, btVector3(2, 10, 0), colShape);
 
 

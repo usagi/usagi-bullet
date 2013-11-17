@@ -18,13 +18,12 @@ subject to the following restrictions:
 #include <memory>
 #include <tuple>
 #include <iostream>
+///-----includes_end-----
 
 /// This is a Hello World program for running a basic Bullet physics simulation
 
 int main()
 {
-  ///-----includes_end-----
-
   ///-----initialization_start-----
 
   ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.

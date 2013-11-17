@@ -1,5 +1,7 @@
 # HelloWorld is a minimal sample creating, stepping and deleting a Bullet dynamics world
 
+add_definitions("-std=c++11")
+
 INCLUDE_DIRECTORIES(
 ${BULLET_PHYSICS_SOURCE_DIR}/src 
 /usr/include/bullet

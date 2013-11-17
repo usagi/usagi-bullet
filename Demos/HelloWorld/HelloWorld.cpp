@@ -39,7 +39,14 @@ int main()
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	std::unique_ptr<btSequentialImpulseConstraintSolver> solver(new btSequentialImpulseConstraintSolver);
 
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher.get(),overlappingPairCache.get(),solver.get(),collisionConfiguration.get());
+	std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld
+        ( new btDiscreteDynamicsWorld
+          ( dispatcher.get()
+          , overlappingPairCache.get()
+          , solver.get()
+          , collisionConfiguration.get()
+          )
+        );
 
 	dynamicsWorld->setGravity(btVector3(0,-10,0));
 
@@ -163,9 +170,6 @@ int main()
 		collisionShapes[j] = 0;
 		delete shape;
 	}
-
-	//delete dynamics world
-	delete dynamicsWorld;
 
 	//next line is optional: it will be cleared by the destructor when the array goes out of scope
 	collisionShapes.clear();

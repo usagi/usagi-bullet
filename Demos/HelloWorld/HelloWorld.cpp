@@ -16,6 +16,7 @@ subject to the following restrictions:
 ///-----includes_start-----
 #include "btBulletDynamicsCommon.h"
 #include <memory>
+#include <tuple>
 #include <iostream>
 
 /// This is a Hello World program for running a basic Bullet physics simulation
@@ -68,7 +69,7 @@ int main()
   groundTransform.setIdentity();
   groundTransform.setOrigin(btVector3(0,-56,0));
 
-  {
+  auto body_1_dtor = [&](){
     btScalar mass(0.);
 
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
@@ -79,13 +80,15 @@ int main()
       groundShape->calculateLocalInertia(mass,localInertia);
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-    btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,groundShape.get(),localInertia);
-    btRigidBody* body = new btRigidBody(rbInfo);
+    std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(groundTransform));
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), groundShape.get(), localInertia);
+    std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
 
     //add the body to the dynamics world
-    dynamicsWorld->addRigidBody(body);
-  }
+    dynamicsWorld->addRigidBody(body.get());
+    
+    return std::make_tuple(std::move(myMotionState), std::move(body));
+  }();
 
 
   //create a dynamic rigidbody
@@ -94,7 +97,7 @@ int main()
   std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
   collisionShapes.push_back(colShape.get());
   
-  {
+  auto body_2_dtor = [&](){
     /// Create Dynamic Objects
     btTransform startTransform;
     startTransform.setIdentity();
@@ -111,12 +114,14 @@ int main()
       startTransform.setOrigin(btVector3(2,10,0));
     
       //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-      btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-      btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape.get(),localInertia);
-      btRigidBody* body = new btRigidBody(rbInfo);
+      std::unique_ptr<btDefaultMotionState> myMotionState(new btDefaultMotionState(startTransform));
+      btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState.get(), colShape.get(), localInertia);
+      std::unique_ptr<btRigidBody> body(new btRigidBody(rbInfo));
 
-      dynamicsWorld->addRigidBody(body);
-  }
+      dynamicsWorld->addRigidBody(body.get());
+    
+    return std::make_tuple(std::move(myMotionState), std::move(body));
+  }();
 
 
 
@@ -152,19 +157,6 @@ int main()
   //cleanup in the reverse order of creation/initialization
   
   ///-----cleanup_start-----
-
-  //remove the rigidbodies from the dynamics world and delete them
-  for(auto i = dynamicsWorld->getNumCollisionObjects() - 1; i >= 0 ; --i)
-  {
-    btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
-    btRigidBody* body = btRigidBody::upcast(obj);
-    if (body && body->getMotionState())
-    {
-      delete body->getMotionState();
-    }
-    dynamicsWorld->removeCollisionObject( obj );
-    delete obj;
-  }
 
   ///-----cleanup_end-----
 }

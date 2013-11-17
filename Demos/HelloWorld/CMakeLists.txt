@@ -2,6 +2,7 @@
 
 INCLUDE_DIRECTORIES(
 ${BULLET_PHYSICS_SOURCE_DIR}/src 
+/usr/include/bullet
 )
 
 LINK_LIBRARIES(

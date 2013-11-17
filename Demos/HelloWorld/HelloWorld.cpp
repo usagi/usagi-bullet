@@ -37,9 +37,9 @@ int main()
 	std::unique_ptr<btBroadphaseInterface> overlappingPairCache(new btDbvtBroadphase());
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+	std::unique_ptr<btSequentialImpulseConstraintSolver> solver(new btSequentialImpulseConstraintSolver);
 
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher.get(),overlappingPairCache.get(),solver,collisionConfiguration.get());
+	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher.get(),overlappingPairCache.get(),solver.get(),collisionConfiguration.get());
 
 	dynamicsWorld->setGravity(btVector3(0,-10,0));
 
@@ -166,9 +166,6 @@ int main()
 
 	//delete dynamics world
 	delete dynamicsWorld;
-
-	//delete solver
-	delete solver;
 
 	//next line is optional: it will be cleared by the destructor when the array goes out of scope
 	collisionShapes.clear();

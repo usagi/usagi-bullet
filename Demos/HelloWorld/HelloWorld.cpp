@@ -62,7 +62,6 @@ int main()
     )
   );
 
-  // シェイプ群のトラッキングを維持する事で終了時にメモリーを開放できるでしょう。（訳注：いいからスマポ使え）
   // できるだけ、剛体群が衝突形状（シェイプ）を流用する様にしましょう！
   btAlignedObjectArray<btCollisionShape*> collisionShapes;
 

@@ -53,13 +53,17 @@ int main()
   ///-----initialization_end-----
 
   ///create a few basic rigid bodies
-  btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.),btScalar(50.),btScalar(50.)));
+  std::unique_ptr<btCollisionShape> groundShape
+  ( new btBoxShape
+    ( btVector3( btScalar(50.), btScalar(50.), btScalar(50.) )
+    )
+  );
 
   //keep track of the shapes, we release memory at exit.
   //make sure to re-use collision shapes among rigid bodies whenever possible!
   btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
-  collisionShapes.push_back(groundShape);
+  collisionShapes.push_back(groundShape.release());
 
   btTransform groundTransform;
   groundTransform.setIdentity();
@@ -77,7 +81,7 @@ int main()
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,groundShape,localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,groundShape.get(),localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
 
     //add the body to the dynamics world

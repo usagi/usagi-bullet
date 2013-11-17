@@ -63,7 +63,7 @@ int main()
   //make sure to re-use collision shapes among rigid bodies whenever possible!
   btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
-  collisionShapes.push_back(groundShape.release());
+  collisionShapes.push_back(groundShape.get());
 
   btTransform groundTransform;
   groundTransform.setIdentity();
@@ -89,13 +89,13 @@ int main()
   }
 
 
+  //create a dynamic rigidbody
+
+  //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
+  std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
+  collisionShapes.push_back(colShape.get());
+  
   {
-    //create a dynamic rigidbody
-
-    //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
-    std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
-    collisionShapes.push_back(colShape.get());
-
     /// Create Dynamic Objects
     btTransform startTransform;
     startTransform.setIdentity();
@@ -117,8 +117,6 @@ int main()
       btRigidBody* body = new btRigidBody(rbInfo);
 
       dynamicsWorld->addRigidBody(body);
-    
-    colShape.release();
   }
 
 
@@ -168,17 +166,6 @@ int main()
     dynamicsWorld->removeCollisionObject( obj );
     delete obj;
   }
-
-  //delete collision shapes
-  for (int j=0;j<collisionShapes.size();j++)
-  {
-    btCollisionShape* shape = collisionShapes[j];
-    collisionShapes[j] = 0;
-    delete shape;
-  }
-
-  //next line is optional: it will be cleared by the destructor when the array goes out of scope
-  collisionShapes.clear();
 
   ///-----cleanup_end-----
 }

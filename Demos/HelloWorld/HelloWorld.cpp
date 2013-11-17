@@ -93,8 +93,8 @@ int main()
     //create a dynamic rigidbody
 
     //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
-    btCollisionShape* colShape = new btSphereShape(btScalar(1.));
-    collisionShapes.push_back(colShape);
+    std::unique_ptr<btCollisionShape> colShape(new btSphereShape(btScalar(1.)));
+    collisionShapes.push_back(colShape.get());
 
     /// Create Dynamic Objects
     btTransform startTransform;
@@ -113,10 +113,12 @@ int main()
     
       //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
       btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-      btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
+      btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape.get(),localInertia);
       btRigidBody* body = new btRigidBody(rbInfo);
 
       dynamicsWorld->addRigidBody(body);
+    
+    colShape.release();
   }
 
 

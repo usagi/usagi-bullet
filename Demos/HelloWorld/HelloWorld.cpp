@@ -40,13 +40,13 @@ int main()
   std::unique_ptr<btSequentialImpulseConstraintSolver> solver(new btSequentialImpulseConstraintSolver);
 
   std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld
-        ( new btDiscreteDynamicsWorld
-          ( dispatcher.get()
-          , overlappingPairCache.get()
-          , solver.get()
-          , collisionConfiguration.get()
-          )
-        );
+  ( new btDiscreteDynamicsWorld
+    ( dispatcher.get()
+    , overlappingPairCache.get()
+    , solver.get()
+    , collisionConfiguration.get()
+    )
+  );
 
   dynamicsWorld->setGravity(btVector3(0,-10,0));
 

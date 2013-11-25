@@ -11,11 +11,17 @@ SET(GLUT_ROOT ${BULLET_PHYSICS_SOURCE_DIR}/Glut)
 # You shouldn't have to modify anything below this line 
 ########################################################
 
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+
 INCLUDE_DIRECTORIES(
 ${BULLET_PHYSICS_SOURCE_DIR}/src ${BULLET_PHYSICS_SOURCE_DIR}/Demos/OpenGL 
+/usr/include/bullet
 )
 
-
+LINK_DIRECTORIES(
+${BULLET_PHYSICS_SOURCE_DIR}/Demos/OpenGL/build
+)
 
 IF (USE_GLUT)
 	LINK_LIBRARIES(
